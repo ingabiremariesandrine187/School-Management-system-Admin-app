@@ -1,16 +1,11 @@
 const mongoose = require('mongoose');
 
-const classSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  grade: { type: String, required: true },
-  teacherId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  schedule: [{
-    day: String,
-    subject: String,
-    startTime: String,
-    endTime: String
-  }],
-  createdAt: { type: Date, default: Date.now }
-});
+const ClassSchema = new mongoose.Schema({
+  name: { type: String, required: true },            // e.g. "Primary 1A"
+  level: { type: String },                           // e.g. "P1" or "Grade 1"
+  teacherId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // assigned teacher
+  subjectIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' }],
+  notes: { type: String }
+}, { timestamps: true });
 
-module.exports = mongoose.model('Class', classSchema);
+module.exports = mongoose.model('Class', ClassSchema);

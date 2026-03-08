@@ -1,46 +1,43 @@
 const classService = require('../services/classService');
+const mongoose = require('mongoose');
+const ClassModel = require('../models/Class');
 
-exports.getAllClasses = async (req, res) => {
+async function create(req, res) {
   try {
-    const classes = await classService.getAllClasses();
-    res.json(classes);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    const { name, level, teacherId, subjectIds, notes } = req.body;
+    if (!name) return res.status(400).json({ message: 'name required' });
+    if (teacherId && !mongoose.Types.ObjectId.isValid(teacherId)) {
+      return res.status(400).json({ message: 'Invalid teacherId' });
+    }
+    const cls = await ClassModel.create({ name, level, teacherId, subjectIds, notes });
+    return res.status(201).json(cls);
+  } catch (err) {
+    console.error('classController.create', err);
+    return res.status(500).json({ message: 'Server error' });
   }
-};
+}
 
-exports.getClassById = async (req, res) => {
+async function list(req, res) {
   try {
-    const classData = await classService.getClassById(req.params.id);
-    res.json(classData);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
+    const classes = await ClassModel.find({}).populate('teacherId', 'name').lean();
+    return res.json(classes);
+  } catch (err) {
+    console.error('classController.list', err);
+    return res.status(500).json({ message: 'Server error' });
   }
-};
+}
 
-exports.createClass = async (req, res) => {
+async function get(req, res) {
   try {
-    const classData = await classService.createClass(req.body);
-    res.status(201).json(classData);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid id' });
+    const cls = await ClassModel.findById(id).populate('teacherId', 'name').lean();
+    if (!cls) return res.status(404).json({ message: 'Not found' });
+    return res.json(cls);
+  } catch (err) {
+    console.error('classController.get', err);
+    return res.status(500).json({ message: 'Server error' });
   }
-};
+}
 
-exports.updateClass = async (req, res) => {
-  try {
-    const classData = await classService.updateClass(req.params.id, req.body);
-    res.json(classData);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-exports.deleteClass = async (req, res) => {
-  try {
-    const result = await classService.deleteClass(req.params.id);
-    res.json(result);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
+module.exports = { create, list, get };

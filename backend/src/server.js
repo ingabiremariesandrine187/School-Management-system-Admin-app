@@ -11,6 +11,7 @@ const transactionRoutes = require('./routes/transactionRoutes');
 const classRoutes = require('./routes/classRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
 
 const app = express();
 
@@ -39,6 +40,8 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/teachers', teacherRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/admin/attendance', attendanceRoutes);
+console.log('Mounted /api/admin/attendance');
 
 // Error handler
 app.use((err, req, res, next) => {

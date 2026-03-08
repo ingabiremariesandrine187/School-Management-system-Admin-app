@@ -1,21 +1,20 @@
 const mongoose = require('mongoose');
 
-const studentSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  classId: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
-  feeBalance: { type: Number, default: 0 },
-  grades: [{
-    subject: String,
-    score: Number,
-    term: String,
-    date: { type: Date, default: Date.now }
-  }],
-  attendance: [{
-    date: { type: Date, default: Date.now },
-    status: { type: String, enum: ['present', 'absent', 'late'] }
-  }],
-  createdAt: { type: Date, default: Date.now }
-});
+const ContactSchema = new mongoose.Schema({
+  phone: { type: String },
+  email: { type: String }
+}, { _id: false });
 
-module.exports = mongoose.model('Student', studentSchema);
+const StudentSchema = new mongoose.Schema({
+  firstName: { type: String, required: true },
+  lastName: { type: String },
+  admissionNumber: { type: String, unique: true, sparse: true },
+  dob: { type: Date },
+  gender: { type: String, enum: ['male','female','other'] },
+  classId: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
+  parentId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  contact: { type: ContactSchema },
+  notes: { type: String }
+}, { timestamps: true });
+
+module.exports = mongoose.model('Student', StudentSchema);

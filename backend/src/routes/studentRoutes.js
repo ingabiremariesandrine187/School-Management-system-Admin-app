@@ -1,18 +1,14 @@
 const express = require('express');
-const studentController = require('../controllers/studentController');
-const { protect, authorize } = require('../middlewares/auth');
-
 const router = express.Router();
+const studentController = require('../controllers/studentController');
+const auth = require('../middlewares/authMiddleware');
 
-router.use(protect);
-router.use(authorize('admin', 'teacher'));
-
-router.get('/', studentController.getAllStudents);
-router.get('/:id', studentController.getStudentById);
-router.post('/', studentController.createStudent);
-router.put('/:id', studentController.updateStudent);
-router.delete('/:id', studentController.deleteStudent);
-router.get('/:id/grades', studentController.getStudentGrades);
-router.get('/:id/attendance', studentController.getStudentAttendance);
+// routes
+router.get('/by-class/:id', auth.requireAuth, /* auth.requireRole(['admin','teacher']), */ studentController.byClass);
+router.get('/', auth.requireAuth, auth.requireRole(['admin','teacher']), studentController.list);
+router.get('/:id', auth.requireAuth, auth.requireRole(['admin','teacher']), studentController.get);
+router.post('/', auth.requireAuth, auth.requireRole(['admin','teacher']), studentController.create);
+router.put('/:id', auth.requireAuth, auth.requireRole(['admin','teacher']), studentController.update);
+router.delete('/:id', auth.requireAuth, auth.requireRole(['admin','teacher']), studentController.remove);
 
 module.exports = router;

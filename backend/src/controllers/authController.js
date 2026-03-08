@@ -1,14 +1,29 @@
 const authService = require('../services/authService');
 const User = require('../models/User');
 const { userDTO } = require('../dtos');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 exports.login = async (req, res) => {
   try {
-    const { email, password, deviceId } = req.body;
-    const result = await authService.login(email, password, deviceId);
-    res.json(result);
-  } catch (error) {
-    res.status(401).json({ message: error.message });
+    const { email, password } = req.body;
+    console.log('LOGIN attempt for', email);
+    const user = await User.findOne({ email }).lean();
+    if (!user) {
+      console.log('LOGIN: user not found for', email);
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    console.log('LOGIN: user found, hasPassword=', !!user.password);
+    const ok = await bcrypt.compare(password || '', user.password || '');
+    console.log('LOGIN: password match =', ok);
+    if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
+
+    const payload = { id: user._id.toString(), role: user.role || 'teacher' };
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'dev_secret', { expiresIn: '1d' });
+    return res.json({ success: true, token, user: { id: user._id, email: user.email, role: user.role } });
+  } catch (err) {
+    console.error('auth.login error', err);
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 

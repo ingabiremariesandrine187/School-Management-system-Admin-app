@@ -8,8 +8,11 @@ import Classes from './pages/Classes';
 import Transactions from './pages/Transactions';
 import DeviceVerification from './pages/DeviceVerification';
 import AcademicRecords from './pages/AcademicRecords';
+import MarkAttendance from './pages/MarkAttendance';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
+import StudentManagement from './pages/StudentManagement';
+import 'antd/dist/antd.css';
 
 function App() {
   return (
@@ -27,7 +30,9 @@ function App() {
                   <Routes>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/students" element={<Students />} />
+                    <Route path="/students/manage" element={<StudentManagement />} />
                     <Route path="/teachers" element={<Teachers />} />
+                    <Route path="/teachers/attendance" element={<MarkAttendance />} />
                     <Route path="/classes" element={<Classes />} />
                     <Route path="/transactions" element={<Transactions />} />
                     <Route path="/device-verification" element={<DeviceVerification />} />

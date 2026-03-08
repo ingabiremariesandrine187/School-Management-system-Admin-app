@@ -5,5 +5,6 @@ export const teacherService = {
   getById: (id) => api.get(`/teachers/${id}`),
   create: (data) => api.post('/teachers', data),
   update: (id, data) => api.put(`/teachers/${id}`, data),
-  delete: (id) => api.delete(`/teachers/${id}`)
-};
+  delete: (id) => api.delete(`/teachers/${id}`),
+  getClasses: () => api.get('/classes'),
+};   
